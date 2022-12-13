@@ -4,21 +4,33 @@ import Layout from "../components/Layout";
 import Seo from "../components/Seo";
 
 // eslint-disable-next-line no-undef
-const Blog = (props: PageProps<Queries.BlogTitlesQuery>) => {
+const Blog = (props: PageProps<Queries.BlogPostsQuery>) => {
   return (
     <Layout title="blog">
-      <ul>
-        {props.data.allFile.nodes.map((item, index) => <li key={index}>{item.name}</li>)}
-      </ul>
+      <section>
+        {props.data.allMdx.nodes.map((item, index) => (
+          <article key={index}>
+            <h3>{item.frontmatter?.title ?? ""}</h3>
+            <h5>{item.frontmatter?.category ?? ""}</h5>
+            <h5>{item?.frontmatter?.date ?? ""}</h5>
+            <p>{item.excerpt}</p>
+          </article>
+        ))}
+      </section>
     </Layout>
   );
 };
 
 export const query = graphql`
-  query BlogTitles {
-      allFile {
+  query BlogPosts {
+      allMdx {
           nodes {
-              name
+              frontmatter {
+                  title,
+                  category, 
+                  date(formatString: "YYYY.MM.DD")
+              }
+              excerpt(pruneLength: 50)
           }
       }
   }
